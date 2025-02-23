@@ -5,6 +5,7 @@ const cors = require("cors");
 const bookRoutes = require('./routes/bookRoutes');
 const memberRoutes = require('./routes/memberRoutes');
 const issuanceRoutes = require('./routes/issuanceRoutes'); 
+const libraryRoutes = require("./routes/libraryRoutes")
 const authenticateAPIKey = require("./middleware/authMiddleware");
 const bodyParser = require("body-parser")
 
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 app.use("/api/books",authenticateAPIKey ,bookRoutes);
 app.use("/api/members",authenticateAPIKey , memberRoutes);
 app.use("/api/issuance",authenticateAPIKey , issuanceRoutes);
+app.use("/api/library-stats",authenticateAPIKey , libraryRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
