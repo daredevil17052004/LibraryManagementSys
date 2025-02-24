@@ -15,7 +15,7 @@ This document validates the completion of the Library Management System project,
 
 ### Backend Running
 _(Attach a screenshot of the terminal showing `npm run dev` execution)_
-![alt text](./Screenshots/image-2.png)
+![alt text](/Screenshots/image-2.png)
 
 ### Frontend Running
 _(Attach a screenshot of the terminal showing `npm run dev` execution and the application UI)_
