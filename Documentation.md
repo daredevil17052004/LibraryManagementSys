@@ -102,7 +102,6 @@ PUT    /api/books/:id - Update book
 
 ### Members
 ```
-GET    /api/members     - Get all members
 GET    /api/members/:id - Get member by ID
 POST   /api/members     - Create new member
 PUT    /api/members/:id - Update member
@@ -110,16 +109,15 @@ PUT    /api/members/:id - Update member
 
 ### Issuances
 ```
-GET    /api/issuances     - Get all issuances
 GET    /api/issuances/:id - Get issuance by ID
 POST   /api/issuances     - Create new issuance
 PUT    /api/issuances/:id - Update issuance
 ```
 
+*Answer to all the Question*
 ### Library-Stats
 ```
 GET     /api/library-stats - Get all library-stats 
-*Answer to all the Question*
 ```
 
 ## 💡 Key SQL Queries
