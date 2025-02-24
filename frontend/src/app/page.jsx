@@ -11,6 +11,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import LibraryStats from "@/components/LibraryStats";
 
 export default function Home() {
+
+  const today = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date());
+
   return (
     <div className="h-screen w-full ">
       <div className="h-24 bg-slate-100 px-10 flex items-center justify-between">
@@ -20,12 +28,12 @@ export default function Home() {
           </div>
 
           <div>
-              <p>Friday, February 21, 2025</p>
+              <p>{today}</p>
           </div>
         </div>
 
-        <div className="flex justify-between items-center w-[600px]">
-          <div >
+        <div className="flex justify-between items-center ">
+          {/* <div >
             <Input type="email" id="email" placeholder="Email" />
           </div>          
 
@@ -44,7 +52,7 @@ export default function Home() {
 
           <div>
             <button className="p-2 w-40 border-2">Refresh</button>
-          </div>
+          </div> */}
 
           <div>
             <Avatar>
