@@ -153,6 +153,7 @@ ORDER BY times_borrowed DESC
 LIMIT 10;
 ```
 
+
 ## 🔒 Security Features
 - Environment variables for sensitive data
 - Network isolation in Docker
