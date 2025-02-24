@@ -18,6 +18,10 @@ This is a full-stack Library Management System built with:
 
 ---
 
+## Docker Setup
+    Please refer to the Documentation folder if setting the docker for first time.
+    Read Documentation.md
+    
 ## Backend Setup (Express.js + MySQL)
 
 ### Prerequisites
