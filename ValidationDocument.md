@@ -15,25 +15,60 @@ This document validates the completion of the Library Management System project,
 
 ### Backend Running
 _(Attach a screenshot of the terminal showing `npm run dev` execution)_
-![alt text](image-1.png)
+![alt text](image-2.png)
 
 ### Frontend Running
 _(Attach a screenshot of the terminal showing `npm run dev` execution and the application UI)_
+![alt text](image-1.png)
+
 
 ### MySQL Container Running
 _(Attach a screenshot of `docker ps` showing the running MySQL container)_
+![alt text](image-3.png)
 
-### API Testing (Postman/Browser)
-- `GET /api/stats` (Never Borrowed Books)
-- `GET /api/stats` (Outstanding Books)
-- `GET /api/stats/pending-returns/:date`
+### API Testing (ThunderClient)
+- `GET /api/library-stats` (Library-Stats API response)
 _(Attach screenshots of API responses)_
+![alt text](image-4.png)
+
+
+
+- `GET /api/books/3` (books fetching api)
+![alt text](image-5.png)
+
+- `POST /api/books`(books creation api)
+![alt text](image-6.png)
+
+- `PUT /api/books/29` (books updating api, 29 is the id for book returns api)
+![alt text](image-7.png)
+
+
+
+
+- `GET /api/members/3` (members fetching api)
+![alt text](image-8.png)
+
+- `POST /api/members`(members creation api)
+![alt text](image-9.png)
+
+- `PUT /api/members/13` (members updating api, 13 is the id for member updating api)
+![alt text](image-10.png)
+
+
+
+- `GET /api/issuance/5` (issation api )
+![alt text](image-11.png)
+
+- `POST /api/issuance`(isssuaction creation api)
+![alt text](image-12.png)
+
+- `PUT /api/issuance/5` (issuaction updating api, 5 is the id for issuaction api )
+![alt text](image-13.png)
+
 
 ### UI Dashboard
 _(Attach a screenshot of the dashboard tracking book returns)_
-
-### Deployment Proof
-_(Attach screenshots of CI/CD pipeline or Nginx configuration if applicable)_
+![alt text](image-14.png)
 
 ---
 
@@ -41,12 +76,11 @@ _(Attach screenshots of CI/CD pipeline or Nginx configuration if applicable)_
 
 ### Repository Overview
 _(Attach a screenshot of the GitHub repository, including backend, frontend, and Docker configurations)_
+![alt text](image-15.png)
 
 ### Commit History
 _(Attach a screenshot showing meaningful commit messages and contributions)_
-
-### Pull Requests & Issues
-_(Attach a screenshot if applicable, showing contributions via pull requests or issue tracking)_
+![alt text](image-16.png)
 
 ---
 
