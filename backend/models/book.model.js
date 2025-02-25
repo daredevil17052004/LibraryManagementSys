@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
 const getBooks = (callback) => {
-  db.query('SELECT * FROM book', callback);
+  db.promisePool.query('SELECT * FROM book', callback);
 };
 
 module.exports = { getBooks };

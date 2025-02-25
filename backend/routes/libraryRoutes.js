@@ -1,20 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../utils/db');
+const logger = require('../utils/logger'); // Import our logger
 
 // API to fetch library statistics
 router.get('/', async (req, res) => {
     try {
+        logger.info('Fetching library statistics');
+        
         // 1️⃣ Get books that have never been borrowed
-        const [neverBorrowedResult] = await db.query(`
+        logger.debug('Querying for books that have never been borrowed');
+        const [neverBorrowedResult] = await db.promisePool.query(`
             SELECT b.book_name, b.book_publisher as Author
             FROM book b
             LEFT JOIN issuance i ON b.book_id = i.book_id
             WHERE i.book_id IS NULL
         `);
+        logger.debug(`Found ${neverBorrowedResult.length} books that have never been borrowed`);
 
         // 2️⃣ Get outstanding books (currently borrowed)
-        const [outstandingBooksResult] = await db.query(`
+        logger.debug('Querying for outstanding books');
+        const [outstandingBooksResult] = await db.promisePool.query(`
             SELECT 
                 m.mem_name as Member_Name,
                 b.book_name as Book_Name,
@@ -28,9 +34,11 @@ router.get('/', async (req, res) => {
             AND CURRENT_DATE() <= i.target_return_date
             ORDER BY i.target_return_date
         `);
+        logger.debug(`Found ${outstandingBooksResult.length} outstanding books`);
 
         // 3️⃣ Get top 10 most borrowed books
-        const [topBorrowedResult] = await db.query(`
+        logger.debug('Querying for top 10 most borrowed books');
+        const [topBorrowedResult] = await db.promisePool.query(`
             SELECT 
                 b.book_name,
                 COUNT(i.book_id) as times_borrowed,
@@ -41,9 +49,11 @@ router.get('/', async (req, res) => {
             ORDER BY times_borrowed DESC
             LIMIT 10
         `);
+        logger.debug(`Retrieved top ${topBorrowedResult.length} most borrowed books`);
 
         // 4️⃣ Get pending returns for today
-        const [pendingReturnsResult] = await db.query(`
+        logger.debug('Querying for pending returns for today');
+        const [pendingReturnsResult] = await db.promisePool.query(`
             SELECT 
                 m.mem_name,
                 m.mem_phone,
@@ -60,7 +70,9 @@ router.get('/', async (req, res) => {
             AND i.target_return_date = CURRENT_DATE()
             ORDER BY m.mem_name
         `);
+        logger.debug(`Found ${pendingReturnsResult.length} pending returns for today`);
 
+        logger.info('Successfully fetched all library statistics');
         res.json({
             never_borrowed: neverBorrowedResult,
             outstanding_books: outstandingBooksResult,
@@ -69,7 +81,7 @@ router.get('/', async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Error fetching library stats:", err);
+        logger.error("Error fetching library stats:", err);
         res.status(500).json({ 
             error: "Failed to fetch library stats",
             details: process.env.NODE_ENV === 'development' ? err.message : undefined 
@@ -81,12 +93,15 @@ router.get('/', async (req, res) => {
 router.get('/pending-returns/:date', async (req, res) => {
     try {
         const { date } = req.params;
+        logger.info(`Fetching pending returns for date: ${date}`);
         
         if (!date || !Date.parse(date)) {
+            logger.warn(`Invalid date format provided: ${date}`);
             return res.status(400).json({ error: "Invalid date format" });
         }
 
-        const [pendingReturnsResult] = await db.query(`
+        logger.debug(`Executing query for pending returns on ${date}`);
+        const [pendingReturnsResult] = await db.promisePool.query(`
             SELECT 
                 m.mem_name,
                 m.mem_phone,
@@ -103,14 +118,17 @@ router.get('/pending-returns/:date', async (req, res) => {
             AND DATE(i.target_return_date) = DATE(?)
             ORDER BY m.mem_name
         `, [date, date]);
-
+        
+        logger.debug(`Found ${pendingReturnsResult.length} pending returns for ${date}`);
+        logger.info(`Successfully fetched pending returns for ${date}`);
+        
         res.json({
             date,
             pending_returns: pendingReturnsResult
         });
 
     } catch (err) {
-        console.error("Error fetching pending returns:", err);
+        logger.error(`Error fetching pending returns for date ${req.params.date}:`, err);
         res.status(500).json({ 
             error: "Failed to fetch pending returns",
             details: process.env.NODE_ENV === 'development' ? err.message : undefined 

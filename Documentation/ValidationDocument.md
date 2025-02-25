@@ -19,7 +19,7 @@ _(Attach a screenshot of the terminal showing `npm run dev` execution)_
 
 ### Frontend Running
 _(Attach a screenshot of the terminal showing `npm run dev` execution and the application UI)_
-![alt text](/Screenshots/image-1.png)
+![alt text](2/Screenshots/image-1.png)
 
 
 ### MySQL Container Running
