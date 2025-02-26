@@ -16,7 +16,7 @@ jobs:
     - name: Set up SSH
       run: |
         mkdir -p ~/.ssh
-        echo "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
+        echo -e "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H 13.48.55.79 >> ~/.ssh/known_hosts
       
@@ -31,9 +31,7 @@ jobs:
     - name: Copy application files (backend, database, frontend)
       run: |
         scp -i ~/.ssh/id_rsa -r ./backend ./frontend ubuntu@13.48.55.79:~/app/
-
-
-        
+  
     - name: Deploy with Docker Compose
       run: |
         ssh -i ~/.ssh/id_rsa ubuntu@13.48.55.79 "cd ~/app && docker-compose pull && docker-compose up -d"
