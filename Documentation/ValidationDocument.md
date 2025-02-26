@@ -70,6 +70,19 @@ _(Attach screenshots of API responses)_
 _(Attach a screenshot of the dashboard tracking book returns)_
 ![alt text](/Screenshots/image-14.png)
 
+
+### Logger
+![alt text](/Screenshots/logger.png)
+
+### Database Container for the database & Container for the application
+![alt text](/Screenshots/docker.png)
+
+### Simulating Deployment 
+![alt text](/Screenshots/ec2.png)
+![alt text](/Screenshots/ec2-aws.png)
+![alt text](/Screenshots/workflow.png)
+
+
 ---
 
 ## 3. GitHub Proof of Work
