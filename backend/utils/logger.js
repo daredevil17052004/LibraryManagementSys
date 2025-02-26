@@ -18,43 +18,23 @@ const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: format.combine(
     format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    format.printf(({ timestamp, level, message, service, ...metadata }) => {
-      let functionName = '';
-      if (metadata.function) {
-        functionName = metadata.function;
-        delete metadata.function;
-      }
-      
-      const metaString = Object.keys(metadata).length 
-        ? ` ${JSON.stringify(metadata)}` 
-        : '';
-        
-      return `[${timestamp}] [${level.toUpperCase()}] [${functionName}] - ${message}${metaString}`;
+    format.printf(({ timestamp, level, message, functionName }) => {
+      return `[${timestamp}] [${level.toUpperCase()}] [${functionName || 'unknown'}] - ${message}`;
     })
   ),
   transports: [
-    // Console transport
     new winston.transports.Console({
       format: format.combine(
         format.colorize(),
-        format.printf(({ timestamp, level, message, service, ...metadata }) => {
-          let functionName = '';
-          if (metadata.function) {
-            functionName = metadata.function;
-            delete metadata.function;
-          }
-          
-          const metaString = Object.keys(metadata).length 
-            ? ` ${JSON.stringify(metadata)}` 
-            : '';
-            
-          return `[${timestamp}] [${level.toUpperCase()}] [${functionName}] - ${message}${metaString}`;
+        format.printf(({ timestamp, level, message, functionName }) => {
+          return `[${timestamp}] [${level.toUpperCase()}] [${functionName || 'unknown'}] - ${message}`;
         })
       )
     }),
-    // File transport
     new winston.transports.File({ 
-      filename: logFile
+      filename: logFile,
+      maxsize: 5 * 1024 * 1024, // Rotate when log file reaches 5MB
+      maxFiles: 5, // Keep last 5 log files
     })
   ]
 });
@@ -63,12 +43,9 @@ const logger = winston.createLogger({
 const getFunctionName = () => {
   const error = new Error();
   const stack = error.stack.split('\n');
-  
-  // The function that called the logger will be at index 3
-  // Format: "    at FunctionName (file:line:column)"
   if (stack.length >= 4) {
     const callerLine = stack[3].trim();
-    const match = callerLine.match(/at\s+([^\s(]+)/);
+    const match = callerLine.match(/at\s+([^(\s]+|<anonymous>)/);
     if (match && match[1]) {
       return match[1];
     }
@@ -78,22 +55,17 @@ const getFunctionName = () => {
 
 // Export wrapper functions that automatically detect caller function name
 module.exports = {
-  error: (message, meta = {}) => {
-    meta.function = meta.function || getFunctionName();
-    logger.error(message, meta);
+  error: (message) => {
+    logger.error(message, { functionName: getFunctionName() });
   },
-  warn: (message, meta = {}) => {
-    meta.function = meta.function || getFunctionName();
-    logger.warn(message, meta);
+  warn: (message) => {
+    logger.warn(message, { functionName: getFunctionName() });
   },
-  info: (message, meta = {}) => {
-    meta.function = meta.function || getFunctionName();
-    logger.info(message, meta);
+  info: (message) => {
+    logger.info(message, { functionName: getFunctionName() });
   },
-  debug: (message, meta = {}) => {
-    meta.function = meta.function || getFunctionName();
-    logger.debug(message, meta);
+  debug: (message) => {
+    logger.debug(message, { functionName: getFunctionName() });
   },
-  // Raw logger access if needed
   logger
 };

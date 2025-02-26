@@ -5,21 +5,22 @@ const logger = require('../utils/logger'); // Import our logger
 
 // API to fetch library statistics
 router.get('/', async (req, res) => {
+    const functionName = 'GET /library-stats';
     try {
-        logger.info('Fetching library statistics');
+        logger.info('Fetching library statistics', { functionName });
         
         // 1️⃣ Get books that have never been borrowed
-        logger.debug('Querying for books that have never been borrowed');
+        logger.debug('Querying for books that have never been borrowed', { functionName });
         const [neverBorrowedResult] = await db.promisePool.query(`
             SELECT b.book_name, b.book_publisher as Author
             FROM book b
             LEFT JOIN issuance i ON b.book_id = i.book_id
             WHERE i.book_id IS NULL
         `);
-        logger.debug(`Found ${neverBorrowedResult.length} books that have never been borrowed`);
+        logger.debug(`Found ${neverBorrowedResult.length} books that have never been borrowed`, { functionName });
 
         // 2️⃣ Get outstanding books (currently borrowed)
-        logger.debug('Querying for outstanding books');
+        logger.debug('Querying for outstanding books', { functionName });
         const [outstandingBooksResult] = await db.promisePool.query(`
             SELECT 
                 m.mem_name as Member_Name,
@@ -34,10 +35,10 @@ router.get('/', async (req, res) => {
             AND CURRENT_DATE() <= i.target_return_date
             ORDER BY i.target_return_date
         `);
-        logger.debug(`Found ${outstandingBooksResult.length} outstanding books`);
+        logger.debug(`Found ${outstandingBooksResult.length} outstanding books`, { functionName });
 
         // 3️⃣ Get top 10 most borrowed books
-        logger.debug('Querying for top 10 most borrowed books');
+        logger.debug('Querying for top 10 most borrowed books', { functionName });
         const [topBorrowedResult] = await db.promisePool.query(`
             SELECT 
                 b.book_name,
@@ -49,10 +50,10 @@ router.get('/', async (req, res) => {
             ORDER BY times_borrowed DESC
             LIMIT 10
         `);
-        logger.debug(`Retrieved top ${topBorrowedResult.length} most borrowed books`);
+        logger.debug(`Retrieved top ${topBorrowedResult.length} most borrowed books`, { functionName });
 
         // 4️⃣ Get pending returns for today
-        logger.debug('Querying for pending returns for today');
+        logger.debug('Querying for pending returns for today', { functionName });
         const [pendingReturnsResult] = await db.promisePool.query(`
             SELECT 
                 m.mem_name,
@@ -70,9 +71,9 @@ router.get('/', async (req, res) => {
             AND i.target_return_date = CURRENT_DATE()
             ORDER BY m.mem_name
         `);
-        logger.debug(`Found ${pendingReturnsResult.length} pending returns for today`);
+        logger.debug(`Found ${pendingReturnsResult.length} pending returns for today`, { functionName });
 
-        logger.info('Successfully fetched all library statistics');
+        logger.info('Successfully fetched all library statistics', { functionName });
         res.json({
             never_borrowed: neverBorrowedResult,
             outstanding_books: outstandingBooksResult,
@@ -81,7 +82,7 @@ router.get('/', async (req, res) => {
         });
 
     } catch (err) {
-        logger.error(`Failed to fetch library stats`, { error: err.message, stack: err.stack });
+        logger.error(`Failed to fetch library stats`, { functionName, error: err.message, stack: err.stack });
         res.status(500).json({ 
             error: "Failed to fetch library stats",
             details: process.env.NODE_ENV === 'development' ? err.message : undefined 
@@ -91,20 +92,21 @@ router.get('/', async (req, res) => {
 
 // API to get pending returns for a specific date
 router.get('/pending-returns/:date', async (req, res) => {
+    const functionName = 'GET /library-stats/pending-returns/:date';
     try {
         const { date } = req.params;
-        logger.info(`Fetching pending returns for date: ${date}`);
+        logger.info(`Fetching pending returns for date: ${date}`, { functionName });
         
         // Validate date format
         if (!date || isNaN(new Date(date).getTime())) {
-            logger.warn(`Invalid date format provided`, { date });
+            logger.warn(`Invalid date format provided`, { functionName, date });
             return res.status(400).json({ error: "Invalid date format" });
         }
 
         // Format date to ensure consistent format for DB query
         const formattedDate = new Date(date).toISOString().split('T')[0];
         
-        logger.debug(`Executing query for pending returns`, { date: formattedDate });
+        logger.debug(`Executing query for pending returns`, { functionName, date: formattedDate });
         const [pendingReturnsResult] = await db.promisePool.query(`
             SELECT 
                 m.mem_name,
@@ -123,8 +125,8 @@ router.get('/pending-returns/:date', async (req, res) => {
             ORDER BY m.mem_name
         `, [formattedDate, formattedDate]);
         
-        logger.debug(`Found pending returns`, { count: pendingReturnsResult.length, date: formattedDate });
-        logger.info(`Successfully fetched pending returns`, { date: formattedDate });
+        logger.debug(`Found pending returns`, { functionName, count: pendingReturnsResult.length, date: formattedDate });
+        logger.info(`Successfully fetched pending returns`, { functionName, date: formattedDate });
         
         res.json({
             date: formattedDate,
@@ -133,6 +135,7 @@ router.get('/pending-returns/:date', async (req, res) => {
 
     } catch (err) {
         logger.error(`Failed to fetch pending returns`, { 
+            functionName, 
             date: req.params.date,
             error: err.message,
             stack: err.stack
