@@ -2,8 +2,8 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ main ]  # Change to your main branch name if different
-  workflow_dispatch:    # Allows manual triggering
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -28,11 +28,9 @@ jobs:
       run: |
         scp -i ~/.ssh/id_rsa docker-compose.yml ubuntu@13.48.55.79:~/app/
         
-    - name: Copy application files
+    - name: Copy application files (backend, database, frontend)
       run: |
-        # Add any additional files your application needs
-        # For example, if you have a src directory:
-        scp -i ~/.ssh/id_rsa -r ./src ubuntu@13.48.55.79:~/app/
+        scp -i ~/.ssh/id_rsa -r ./backend ./database ./frontend ubuntu@13.48.55.79:~/app/
         
     - name: Deploy with Docker Compose
       run: |
