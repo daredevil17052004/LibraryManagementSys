@@ -18,22 +18,22 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+        ssh-keyscan -H 13.48.55.79 >> ~/.ssh/known_hosts
       
     - name: Create remote directory if it doesn't exist
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "mkdir -p ~/app"
+        ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USERNAME }}@13.48.55.79 "mkdir -p ~/app"
         
     - name: Copy docker-compose.yml to EC2
       run: |
-        scp -i ~/.ssh/id_rsa docker-compose.yml ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:~/app/
+        scp -i ~/.ssh/id_rsa docker-compose.yml ${{ secrets.EC2_USERNAME }}@13.48.55.79:~/app/
         
     - name: Copy application files
       run: |
         # Add any additional files your application needs
         # For example, if you have a src directory:
-        scp -i ~/.ssh/id_rsa -r ./src ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:~/app/
+        scp -i ~/.ssh/id_rsa -r ./src ${{ secrets.EC2_USERNAME }}@13.48.55.79:~/app/
         
     - name: Deploy with Docker Compose
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "cd ~/app && docker-compose pull && docker-compose up -d"
+        ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USERNAME }}@13.48.55.79 "cd ~/app && docker-compose pull && docker-compose up -d"
