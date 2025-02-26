@@ -30,7 +30,7 @@ jobs:
         
     - name: Copy application files (backend, database, frontend)
       run: |
-        scp -i ~/.ssh/id_rsa -r ./backend ./database ./frontend ubuntu@13.48.55.79:~/app/
+        scp -i ~/.ssh/id_rsa -r ./backend ./frontend ubuntu@13.48.55.79:~/app/
         
     - name: Deploy with Docker Compose
       run: |
