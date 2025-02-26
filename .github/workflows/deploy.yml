@@ -1,28 +1,46 @@
-name: my-server
+name: library_management
 
 on:
   push:
     branches:
-      - main  # or your deployment branch
+      - main  # Deploy only when main branch is updated
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${ secrets.EC2_SSH_KEY }
+        
+      - name: Add host key
+        run: ssh-keyscan -H 13.61.5.250 >> ~/.ssh/known_hosts
+        
       - name: Deploy to EC2
         run: |
-          # Copy your application files to the server
-          rsync -avz --exclude '.git' --exclude 'node_modules' ./ ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:~/my-app/
-          
-          # Run the deployment script on the server
-          ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "chmod +x ~/my-app/deploy.sh && ~/my-app/deploy.sh"
+          ssh ec2-user@13.61.5.250 << 'EOF'
+            cd /home/ec2-user/library-management
+            
+            # Stop existing containers
+            echo "Stopping existing containers..."
+            docker compose down
+            
+            # Pull latest changes
+            echo "Pulling latest changes..."
+            git pull origin main
+            
+            # Rebuild and restart containers
+            echo "Rebuilding and restarting containers..."
+            docker compose up -d --build
+            
+            # Clean up old Docker images
+            echo "Cleaning up old Docker images..."
+            docker image prune -f
+            
+            echo "Deployment completed."
+          EOF
