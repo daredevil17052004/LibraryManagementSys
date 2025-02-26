@@ -16,7 +16,7 @@ jobs:
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.4
         with:
-          ssh-private-key: ${{ secrets.ANSH }}
+          ssh-private-key: ${{ secrets.SSH }}
         
       - name: Add host key
         run: ssh-keyscan -H 13.61.5.250 >> ~/.ssh/known_hosts
