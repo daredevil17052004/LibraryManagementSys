@@ -24,14 +24,20 @@ jobs:
             cd /home/ubuntu/library-management
 
             # Stop existing containers
+            echo "Stopping existing containers..."
             docker compose down
 
             # Pull latest changes
+            echo "Pulling latest changes..."
             git pull origin main
 
             # Rebuild and restart containers
+            echo "Rebuilding and restarting containers..."
             docker compose up -d --build
 
             # Clean up old Docker images
+            echo "Cleaning up old Docker images..."
             docker image prune -f
+
+            echo "Deployment completed."
           EOF
