@@ -13,6 +13,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H 13.48.55.79 >> ~/.ssh/known_hosts
+      
     - name: Create remote directory if it doesn't exist
       run: |
         ssh -i ~/.ssh/id_rsa ubuntu@13.48.55.79 "mkdir -p ~/app"
