@@ -30,8 +30,12 @@ jobs:
         
     - name: Copy application files (backend, database, frontend)
       run: |
-        scp -i ~/.ssh/id_rsa -r ./backend ./frontend ./deploy.sh .env ubuntu@13.48.55.79:~/app/
-        
+        scp -i ~/.ssh/id_rsa -r ./backend ./frontend ./deploy.sh ubuntu@13.48.55.79:~/app/
+
+    - name: Copy .env file separately
+      run: |
+        scp -i ~/.ssh/id_rsa .env ubuntu@13.48.55.79:~/app/.env
+
     - name: Deploy with Docker Compose
       run: |
         ssh -i ~/.ssh/id_rsa ubuntu@13.48.55.79 "cd ~/app && docker-compose pull && docker-compose up -d"
