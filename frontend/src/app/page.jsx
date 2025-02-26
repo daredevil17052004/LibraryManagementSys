@@ -15,7 +15,7 @@ export default function Home() {
       <div className="h-24 bg-slate-100 px-10 flex items-center justify-between">
         <div className="flex flex-col">
           <div>
-            <p className="text-2xl">Books Due Today</p>
+            <p className="text-2xl">Books Due Today:</p>
           </div>
 
           <div>
