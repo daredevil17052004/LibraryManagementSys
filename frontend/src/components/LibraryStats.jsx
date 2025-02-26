@@ -26,7 +26,7 @@ const LibraryStats = () => {
     });
     const [date, setDate] = useState(new Date());
     
-    const API_BASE_URL = "http://localhost:5000/api"; 
+    const API_BASE_URL = "http://13.48.55.79:5000/api"; 
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
