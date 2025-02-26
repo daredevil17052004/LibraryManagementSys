@@ -1,61 +1,56 @@
 services:
-  # Frontend container
+  # Frontend container (Next.js with SSR)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "3000:3000"  # Serve directly from Node.js SSR
     depends_on:
       - backend
     restart: unless-stopped
-    volumes:
-      # Mount frontend configuration
-      - ./frontend/config:/app/config
-  
-  # Backend container
+    environment:
+      - NODE_ENV=production
+      - API_BASE_URL=http://backend:5000  # Ensure frontend can call backend
+
+  # Backend container (Express.js)
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "5000:5000"  # Change backend to 4000 externally
     depends_on:
       - db
     environment:
       - NODE_ENV=production
-      - DB_HOST=${DB_HOST:-db}
-      - DB_USER=${DB_USER:-root}
-      - DB_PASSWORD=${DB_PASSWORD:-password}
-      - DB_NAME=${DB_NAME:-library_db}
-      - DB_PORT=${DB_PORT:-3306}
-      - LOG_DIR=${LOG_DIR:-/app/logs}
-      - LOG_FILE_PATH=${LOG_FILE_PATH:-/app/logs/library-app.log}
-      - API_KEY=${API_KEY:-secureapikey123}
-      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - DB_HOST=crossover.proxy.rlwy.net
+      - DB_USER=root
+      - DB_PASSWORD=JEYAVEcLFYEEPizmSBFeImGMXgVKLtjT
+      - DB_NAME=railway
+      - DB_PORT=14600
+      - LOG_DIR=/app/logs
+      - LOG_FILE_PATH=/app/logs/library-app.log
+      - API_KEY=secureapikey123
+      - LOG_LEVEL=info
     volumes:
-      # Mount logs directory
       - ./logs:/app/logs
-      # Mount backend configuration
       - ./backend/config:/app/config
     restart: unless-stopped
-  
+
   # Database container
   db:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-password}
-      MYSQL_DATABASE: ${DB_NAME:-library_db}
+      MYSQL_ROOT_PASSWORD: JEYAVEcLFYEEPizmSBFeImGMXgVKLtjT
+      MYSQL_DATABASE: railway
     ports:
-      - "3306:3306"
+      - "14600:3306"
     volumes:
-      # Mount for database persistence
       - db_data:/var/lib/mysql
-      # Use library_backup.sql to initialize database
       - ./database/init:/docker-entrypoint-initdb.d
-      # Mount database configuration
       - ./database/config:/etc/mysql/conf.d
 
 volumes:

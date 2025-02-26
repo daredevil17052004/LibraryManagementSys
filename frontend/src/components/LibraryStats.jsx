@@ -104,7 +104,7 @@ const LibraryStats = () => {
                     </CardHeader>
                     <CardContent>
                         <p className="text-3xl font-bold">
-                            {libraryData.never_borrowed.length}
+                            {libraryData.never_borrowed?.length}
                         </p>
                         <p className="text-sm text-muted-foreground">Total Books</p>
                     </CardContent>
@@ -116,7 +116,7 @@ const LibraryStats = () => {
                     </CardHeader>
                     <CardContent>
                         <p className="text-3xl font-bold">
-                            {libraryData.outstanding_books.length}
+                            {libraryData.outstanding_books?.length}
                         </p>
                         <p className="text-sm text-muted-foreground">Currently Borrowed</p>
                     </CardContent>
@@ -128,7 +128,7 @@ const LibraryStats = () => {
                     </CardHeader>
                     <CardContent>
                         <p className="text-3xl font-bold">
-                            {libraryData.top_borrowed.length}
+                            {libraryData.top_borrowed?.length}
                         </p>
                         <p className="text-sm text-muted-foreground">Most Popular Books</p>
                     </CardContent>
@@ -140,7 +140,7 @@ const LibraryStats = () => {
                     </CardHeader>
                     <CardContent>
                         <p className="text-3xl font-bold">
-                            {libraryData.pending_returns.length}
+                            {libraryData.pending_returns?.length}
                         </p>
                         <p className="text-sm text-muted-foreground">Due Today</p>
                     </CardContent>
@@ -181,7 +181,7 @@ const LibraryStats = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {libraryData.outstanding_books.map((book, index) => (
+                                {libraryData.outstanding_books?.map((book, index) => (
                                     <tr key={index} className="bg-white border-b hover:bg-gray-50">
                                         <td className="px-6 py-4 font-medium">
                                             {book.mem_name}
@@ -206,7 +206,7 @@ const LibraryStats = () => {
                 <CardContent>
                     <Carousel className="w-full">
                         <CarouselContent>
-                            {libraryData.top_borrowed.map((book, index) => (
+                            {libraryData.top_borrowed?.map((book, index) => (
                                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                                     <Card>
                                         <CardContent className="p-4">
@@ -233,7 +233,7 @@ const LibraryStats = () => {
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {libraryData.never_borrowed.map((book, index) => (
+                        {libraryData.never_borrowed?.map((book, index) => (
                             <Card key={index}>
                                 <CardContent className="p-4">
                                     <p className="font-semibold">{book.book_name}</p>

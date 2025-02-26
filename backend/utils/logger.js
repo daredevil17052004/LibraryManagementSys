@@ -1,10 +1,11 @@
+// utils/logger.js
 const winston = require('winston');
 const path = require('path');
 const fs = require('fs');
 const { format } = winston;
 
 // Ensure logs directory exists
-const logDir = process.env.LOG_DIR || path.join(__dirname, '../../logs');
+const logDir = process.env.LOG_DIR || path.join(__dirname, '../logs');
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir, { recursive: true });
 }

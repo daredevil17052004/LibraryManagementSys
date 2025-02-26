@@ -81,7 +81,7 @@ router.get('/', async (req, res) => {
         });
 
     } catch (err) {
-        logger.error("Error fetching library stats:", err);
+        logger.error(`Failed to fetch library stats`, { error: err.message, stack: err.stack });
         res.status(500).json({ 
             error: "Failed to fetch library stats",
             details: process.env.NODE_ENV === 'development' ? err.message : undefined 
@@ -95,12 +95,16 @@ router.get('/pending-returns/:date', async (req, res) => {
         const { date } = req.params;
         logger.info(`Fetching pending returns for date: ${date}`);
         
-        if (!date || !Date.parse(date)) {
-            logger.warn(`Invalid date format provided: ${date}`);
+        // Validate date format
+        if (!date || isNaN(new Date(date).getTime())) {
+            logger.warn(`Invalid date format provided`, { date });
             return res.status(400).json({ error: "Invalid date format" });
         }
 
-        logger.debug(`Executing query for pending returns on ${date}`);
+        // Format date to ensure consistent format for DB query
+        const formattedDate = new Date(date).toISOString().split('T')[0];
+        
+        logger.debug(`Executing query for pending returns`, { date: formattedDate });
         const [pendingReturnsResult] = await db.promisePool.query(`
             SELECT 
                 m.mem_name,
@@ -117,18 +121,23 @@ router.get('/pending-returns/:date', async (req, res) => {
             WHERE i.issuance_status = 'issued'
             AND DATE(i.target_return_date) = DATE(?)
             ORDER BY m.mem_name
-        `, [date, date]);
+        `, [formattedDate, formattedDate]);
         
-        logger.debug(`Found ${pendingReturnsResult.length} pending returns for ${date}`);
-        logger.info(`Successfully fetched pending returns for ${date}`);
+        logger.debug(`Found pending returns`, { count: pendingReturnsResult.length, date: formattedDate });
+        logger.info(`Successfully fetched pending returns`, { date: formattedDate });
         
         res.json({
-            date,
+            date: formattedDate,
             pending_returns: pendingReturnsResult
         });
 
     } catch (err) {
-        logger.error(`Error fetching pending returns for date ${req.params.date}:`, err);
+        logger.error(`Failed to fetch pending returns`, { 
+            date: req.params.date,
+            error: err.message,
+            stack: err.stack
+        });
+        
         res.status(500).json({ 
             error: "Failed to fetch pending returns",
             details: process.env.NODE_ENV === 'development' ? err.message : undefined 
